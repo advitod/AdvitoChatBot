@@ -6,7 +6,7 @@ interface Props {
   bot: BotConfig | null;
 }
 
-const API_BASE = "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:4000";
 
 const ChatWindow: React.FC<Props> = ({ bot }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -121,3 +121,4 @@ const ChatWindow: React.FC<Props> = ({ bot }) => {
 };
 
 export default ChatWindow;
+
