@@ -4,8 +4,7 @@ import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
 import BotSettings from "./components/BotSettings";
 import { BotConfig } from "./types";
-
-const API_BASE = "http://localhost:4000";
+import { API_BASE } from "./config";
 
 const App: React.FC = () => {
   const [bots, setBots] = useState<BotConfig[]>([]);
@@ -13,10 +12,18 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchBots = async () => {
-      const res = await fetch(`${API_BASE}/api/bots`);
-      const data = await res.json();
-      setBots(data);
-      if (data.length && !selectedBotId) setSelectedBotId(data[0].id);
+      try {
+        const res = await fetch(`${API_BASE}/api/bots`);
+        if (!res.ok) {
+          console.error("Failed to fetch bots", res.status, await res.text());
+          return;
+        }
+        const data = await res.json();
+        setBots(data);
+        if (data.length && !selectedBotId) setSelectedBotId(data[0].id);
+      } catch (err) {
+        console.error("Error fetching bots:", err);
+      }
     };
     fetchBots();
   }, [selectedBotId]);
@@ -26,11 +33,18 @@ const App: React.FC = () => {
 
   const updateBot = async (bot: BotConfig) => {
     setBots((prev) => prev.map((b) => (b.id === bot.id ? bot : b)));
-    await fetch(`${API_BASE}/api/bots/${bot.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bot)
-    });
+    try {
+      const res = await fetch(`${API_BASE}/api/bots/${bot.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bot)
+      });
+      if (!res.ok) {
+        console.error("Failed to update bot", res.status, await res.text());
+      }
+    } catch (err) {
+      console.error("Error updating bot:", err);
+    }
   };
 
   return (
