@@ -6,7 +6,7 @@ import axios from "axios";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 4000;
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 
 app.use(cors());
 app.use(express.json());
@@ -109,6 +109,4 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`AdvitoChatBot server running on http://localhost:${port}`);
-});
+app.listen(port, () => console.log(`Server listening on ${port}`));
